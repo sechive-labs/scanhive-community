@@ -1,0 +1,43 @@
+# --- Environment / secrets ---
+.env
+.env.local
+!.env.example
+
+# --- Python (backend) ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+htmlcov/
+.coverage
+.coverage.*
+
+# --- Node (frontend) ---
+node_modules/
+dist/
+dist-ssr/
+*.local
+.vite/
+
+# --- Runtime data ---
+backend/app/uploads/*
+!backend/app/uploads/.gitkeep
+
+# --- TLS material for the prod reverse proxy ---
+deploy/edge/certs/*
+!deploy/edge/certs/.gitkeep
+
+# --- Editors / OS ---
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# --- Logs ---
+*.log
+npm-debug.log*
+
+# Generated email template previews
+email-previews/

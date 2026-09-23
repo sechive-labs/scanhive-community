@@ -1,0 +1,93 @@
+# Production deployment (VPS + Cloudflare).
+#
+# Unlike docker-compose.yml, nothing here publishes a port directly except
+# the `edge` service (80 + 443). Postgres and the backend are reachable
+# only from other containers on the internal network -- there is no
+# ":8000" or ":5432" exposed to the internet at all.
+#
+# Usage:
+#   cp backend/.env.example backend/.env
+#   # edit backend/.env: set DATABASE_URL's password to match POSTGRES_PASSWORD
+#   # below, plus FRONTEND_URL, real SMTP settings, etc. -- see README
+#   mkdir -p deploy/edge/certs
+#   # place Cloudflare Origin Certificate files there as origin.pem / origin-key.pem
+#   SERVER_NAME=scanhive.example.com \
+#   POSTGRES_PASSWORD=<a strong, unique password> \
+#     docker compose -p scanhive-prod -f docker-compose.prod.yml up -d --build
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: scanhive-postgres
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-scanhive}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD to a strong password -- see README}
+      POSTGRES_DB: ${POSTGRES_DB:-scanhive}
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-scanhive} -d ${POSTGRES_DB:-scanhive}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+
+    container_name: scanhive-backend
+    image: scanhive-backend:local
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    env_file:
+      - ./backend/.env
+
+    volumes:
+      - backend_data:/data
+
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-}
+
+    container_name: scanhive-frontend
+    image: scanhive-frontend:local
+
+    depends_on:
+      - backend
+
+    restart: unless-stopped
+
+  edge:
+    image: nginx:1.27-alpine
+    container_name: scanhive-edge
+
+    depends_on:
+      - frontend
+
+    environment:
+      SERVER_NAME: ${SERVER_NAME:?Set SERVER_NAME to your domain, e.g. scanhive.example.com}
+
+    volumes:
+      - ./deploy/edge/templates:/etc/nginx/templates:ro
+      - ./deploy/edge/certs:/etc/nginx/certs:ro
+
+    ports:
+      - "80:80"
+      - "443:443"
+
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  backend_data:

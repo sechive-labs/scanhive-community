@@ -1,0 +1,64 @@
+# Edge reverse proxy for a VPS deployment behind Cloudflare.
+#
+# - Port 80: redirects everything to https.
+# - Port 443: terminates TLS with a Cloudflare Origin Certificate and
+#   forwards all traffic to the frontend container, which in turn proxies
+#   /api (and /docs, /health, /openapi.json) to the backend container
+#   internally. Nothing but 80/443 needs to be reachable from the internet.
+#
+# Set SERVER_NAME via the SERVER_NAME environment variable (see
+# docker-compose.prod.yml) -- envsubst renders this template on container
+# start.
+
+# Recover the real visitor IP from Cloudflare (only trusted from Cloudflare's
+# own ranges, so a direct hit on the origin can't forge it). The backend uses
+# it for per-IP rate limiting on sign-in, sign-up and password reset.
+# Ranges: https://www.cloudflare.com/ips/
+set_real_ip_from 173.245.48.0/20;
+set_real_ip_from 103.21.244.0/22;
+set_real_ip_from 103.22.200.0/22;
+set_real_ip_from 103.31.4.0/22;
+set_real_ip_from 141.101.64.0/18;
+set_real_ip_from 108.162.192.0/18;
+set_real_ip_from 190.93.240.0/20;
+set_real_ip_from 188.114.96.0/20;
+set_real_ip_from 197.234.240.0/22;
+set_real_ip_from 198.41.128.0/17;
+set_real_ip_from 162.158.0.0/15;
+set_real_ip_from 104.16.0.0/13;
+set_real_ip_from 104.24.0.0/14;
+set_real_ip_from 172.64.0.0/13;
+set_real_ip_from 131.0.72.0/22;
+set_real_ip_from 2400:cb00::/32;
+set_real_ip_from 2606:4700::/32;
+set_real_ip_from 2803:f800::/32;
+set_real_ip_from 2405:b500::/32;
+set_real_ip_from 2405:8100::/32;
+set_real_ip_from 2a06:98c0::/29;
+set_real_ip_from 2c0f:f248::/32;
+real_ip_header CF-Connecting-IP;
+
+server {
+    listen 80;
+    server_name ${SERVER_NAME};
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    http2 on;
+    server_name ${SERVER_NAME};
+
+    ssl_certificate     /etc/nginx/certs/origin.pem;
+    ssl_certificate_key /etc/nginx/certs/origin-key.pem;
+
+    client_max_body_size 50m;
+
+    location / {
+        proxy_pass http://frontend:80;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}

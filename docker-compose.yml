@@ -1,0 +1,82 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: scanhive-postgres
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_USER: scanhive
+      POSTGRES_PASSWORD: scanhive_dev_password
+      POSTGRES_DB: scanhive
+
+    # Dev only: bound to loopback so the well-known dev password above is
+    # never reachable from other machines.
+    ports:
+      - "127.0.0.1:5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U scanhive -d scanhive"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+
+    container_name: scanhive-backend
+    image: scanhive-backend:local
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    env_file:
+      - ./backend/.env
+
+    volumes:
+      - backend_data:/data
+
+    ports:
+      - "127.0.0.1:8000:8000"
+
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        # Optional. Leave unset so the app auto-detects the API host at
+        # runtime; only set VITE_API_BASE_URL if the API lives on a
+        # different host/port than the frontend.
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-}
+
+    container_name: scanhive-frontend
+    image: scanhive-frontend:local
+
+    depends_on:
+      - backend
+
+    ports:
+      - "80:80"
+
+    restart: unless-stopped
+
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: scanhive-mailpit
+    restart: unless-stopped
+
+    profiles:
+      - mail-testing
+
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+
+volumes:
+  postgres_data:
+  backend_data:

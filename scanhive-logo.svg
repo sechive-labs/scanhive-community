@@ -1,0 +1,62 @@
+<svg width="480" height="480" viewBox="0 0 480 480" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0d0b14"/>
+      <stop offset="100%" stop-color="#151020"/>
+    </linearGradient>
+    <linearGradient id="hexGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#a78bfa"/>
+      <stop offset="100%" stop-color="#7c3aed"/>
+    </linearGradient>
+    <linearGradient id="hexGradDim" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4c3a7a"/>
+      <stop offset="100%" stop-color="#38295e"/>
+    </linearGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="480" height="480" rx="56" fill="url(#bgGrad)"/>
+
+  <!-- subtle grid texture -->
+  <g opacity="0.06" stroke="#a78bfa" stroke-width="1">
+    <line x1="0" y1="120" x2="480" y2="120"/>
+    <line x1="0" y1="240" x2="480" y2="240"/>
+    <line x1="0" y1="360" x2="480" y2="360"/>
+    <line x1="120" y1="0" x2="120" y2="480"/>
+    <line x1="240" y1="0" x2="240" y2="480"/>
+    <line x1="360" y1="0" x2="360" y2="480"/>
+  </g>
+
+  <!-- Hive: central hex + 6 surrounding cells -->
+  <g filter="url(#glow)">
+    <!-- surrounding cells (dim) -->
+    <polygon points="240,110 279,132 279,176 240,198 201,176 201,132" fill="none" stroke="url(#hexGradDim)" stroke-width="3"/>
+    <polygon points="309,153 348,175 348,219 309,241 270,219 270,175" fill="none" stroke="url(#hexGradDim)" stroke-width="3"/>
+    <polygon points="171,153 210,175 210,219 171,241 132,219 132,175" fill="none" stroke="url(#hexGradDim)" stroke-width="3"/>
+    <polygon points="309,241 348,263 348,307 309,329 270,307 270,263" fill="none" stroke="url(#hexGradDim)" stroke-width="3"/>
+    <polygon points="171,241 210,263 210,307 171,329 132,307 132,263" fill="none" stroke="url(#hexGradDim)" stroke-width="3"/>
+    <polygon points="240,284 279,306 279,350 240,372 201,350 201,306" fill="none" stroke="url(#hexGradDim)" stroke-width="3"/>
+
+    <!-- central active cell -->
+    <polygon points="240,197 275,217 275,257 240,277 205,257 205,217" fill="#1a1425" stroke="url(#hexGrad)" stroke-width="4"/>
+  </g>
+
+  <!-- Terminal scan cursor inside central cell -->
+  <g>
+    <rect x="221" y="228" width="10" height="18" fill="#a78bfa"/>
+    <text x="236" y="245" font-family="'JetBrains Mono', 'Courier New', monospace" font-size="16" fill="#c4b5fd">&gt;_</text>
+  </g>
+
+  <!-- Scan line sweep -->
+  <line x1="150" y1="400" x2="330" y2="400" stroke="url(#hexGrad)" stroke-width="2" opacity="0.7"/>
+
+  <!-- Wordmark -->
+  <text x="240" y="440" text-anchor="middle" font-family="'JetBrains Mono', 'Courier New', monospace" font-size="30" letter-spacing="2" fill="#e9e4f7">SCAN<tspan fill="#a78bfa">HIVE</tspan></text>
+</svg>

@@ -1,0 +1,18 @@
+<svg width="480" height="480" viewBox="0 0 480 480" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#0d0b14"/><stop offset="100%" stop-color="#151020"/></linearGradient>
+    <linearGradient id="hexGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#a78bfa"/><stop offset="100%" stop-color="#7c3aed"/></linearGradient>
+    <linearGradient id="hexGradDim" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#4c3a7a"/><stop offset="100%" stop-color="#38295e"/></linearGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="6" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <rect width="480" height="480" rx="56" fill="url(#bgGrad)"/>
+  <g opacity=".06" stroke="#a78bfa"><path d="M0 120h480M0 240h480M0 360h480M120 0v480M240 0v480M360 0v480"/></g>
+  <g filter="url(#glow)" fill="none" stroke-width="3">
+    <path d="m240 110 39 22v44l-39 22-39-22v-44Z M309 153l39 22v44l-39 22-39-22v-44Z M171 153l39 22v44l-39 22-39-22v-44Z M309 241l39 22v44l-39 22-39-22v-44Z M171 241l39 22v44l-39 22-39-22v-44Z M240 284l39 22v44l-39 22-39-22v-44Z" stroke="url(#hexGradDim)"/>
+    <path d="m240 197 35 20v40l-35 20-35-20v-40Z" fill="#1a1425" stroke="url(#hexGrad)" stroke-width="4"/>
+  </g>
+  <rect x="221" y="228" width="10" height="18" fill="#a78bfa"/>
+  <text x="236" y="245" font-family="'JetBrains Mono','Courier New',monospace" font-size="16" fill="#c4b5fd">&gt;_</text>
+  <path d="M150 400h180" stroke="url(#hexGrad)" stroke-width="2" opacity=".7"/>
+  <text x="240" y="440" text-anchor="middle" font-family="'JetBrains Mono','Courier New',monospace" font-size="30" letter-spacing="2" fill="#e9e4f7">SCAN<tspan fill="#a78bfa">HIVE</tspan></text>
+</svg>
