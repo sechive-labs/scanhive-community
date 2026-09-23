@@ -91,7 +91,7 @@ docker compose down
 `docker-compose.prod.yml` runs the same three services behind an `edge` reverse proxy. Only `edge` publishes a port (80 and 443) — Postgres and the backend are reachable exclusively from other containers on the internal network, so there is nothing listening on `:8000` or `:5432` for the outside world to find. The frontend's own nginx (`frontend/nginx.conf`) proxies `/api`, `/docs`, `/health`, and `/openapi.json` to the backend container internally, so the browser only ever talks to one origin, over one port.
 
 
-### 3. Configure and start the stack
+### Configure and start the stack
 
 On the VPS:
 
